@@ -1,0 +1,39 @@
+version: 2
+
+project_name: playah
+
+builds:
+  - id: playah
+    main: .
+    binary: playah
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    # No -X flags: main.version reads the version that the Go toolchain
+    # stamps from the git tag, so only strip the debug info here.
+    ldflags:
+      - -s -w
+    # Windows is left out: the mpv control socket uses syscall.Socketpair,
+    # which Windows does not have.
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: default
+    formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  disable: true
+
+release:
+  draft: true
